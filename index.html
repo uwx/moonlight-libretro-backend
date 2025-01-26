@@ -17,11 +17,12 @@
   <script>
     window.addEventListener("message", (event) => {
       const { name, core, data } = event.data;
+      console.log('name', name, 'core', core, 'data', data);
 
-      EJS_gameBuffer = data;
-      EJS_player = '#container';
-      EJS_gameUrl = name;
-      EJS_core = core;
+      window.EJS_gameBuffer = data;
+      window.EJS_player = '#container';
+      window.EJS_gameUrl = name;
+      window.EJS_core = core;
       
       var script = document.createElement('script');
       script.src = 'js/libretro.js';
