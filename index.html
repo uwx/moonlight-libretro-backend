@@ -13,34 +13,20 @@
   </style>
 </head>
 <body>
-  <button onclick="load()">Load Game</button>
-
   <div id="container"></div>
   <script>
-    // https://stackoverflow.com/a/21797381
-    function base64ToArrayBuffer(base64) {
-      var binaryString = atob(base64);
-      var bytes = new Uint8Array(binaryString.length);
-      for (var i = 0; i < binaryString.length; i++) {
-          bytes[i] = binaryString.charCodeAt(i);
-      }
-      return bytes.buffer;
-    }
+    window.addEventListener("message", (event) => {
+      const { name, core, data } = event.data;
 
-    const romMetadata = JSON.parse(decodeURIComponent(document.location.hash.slice(1, document.location.hash.lastIndexOf(';'))));
-    const romBase64 = decodeURIComponent(document.location.hash.slice(document.location.hash.lastIndexOf(';') + 1));
-    console.log(romMetadata, romBase64)
-    const romBuffer = base64ToArrayBuffer(romBase64);
-
-    EJS_gameBuffer = romBuffer;
-    EJS_player = '#container';
-    EJS_gameUrl = romMetadata.name;
-    EJS_core = romMetadata.core;
-    function load() {
+      EJS_gameBuffer = data;
+      EJS_player = '#container';
+      EJS_gameUrl = name;
+      EJS_core = core;
+      
       var script = document.createElement('script');
-      script.src = 'js/libretro.js'
+      script.src = 'js/libretro.js';
       document.getElementsByTagName('head')[0].appendChild(script);
-    }
+    });
   </script>
 </body>
 </html>
