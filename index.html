@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Moonlight LibretroJS Backend</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- <meta http-equiv="Content-Security-Policy" content="style-src 'unsafe-inline'; script-src 'unsafe-eval'; script-src-elem 'unsafe-inline' https://unpkg.com/@ruffle-rs/ruffle; connect-src https://unpkg.com/; default-src 'none'"> -->
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+  <button onclick="load()">Load Game</button>
+
+  <div id="container"></div>
+  <script>
+    EJS_player = '#container';
+    EJS_gameUrl = `https://corsproxy.io/?url=${encodeURIComponent('https://cdn.discordapp.com/attachments/706929228913967194/1333189141801992342/super_sudoku_v1.1.sfc?ex=6797fca4&is=6796ab24&hm=6ba6fbad832ad80112cb6ac541505113f00ed7eb95a48ed0e705d3e7fcea0fc7&')}`;
+    EJS_core = 'snes9x';
+    function load() {
+      var script = document.createElement('script');
+      script.src = 'js/libretro.js'
+      document.getElementsByTagName('head')[0].appendChild(script);
+    }
+  </script>
+</body>
+</html>
