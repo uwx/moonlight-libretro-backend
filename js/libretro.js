@@ -143,7 +143,7 @@ async function setupMounts() {
   // Multizip support titles needing multiple files
   if (mountZip == true) {
     setLoader('Game');
-    var gameFile = await downloadFile(EJS_gameUrl);
+    var gameFile = typeof EJS_gameBuffer !== 'undefined' && EJS_gameBuffer || await downloadFile(EJS_gameUrl);
     var gamefs = new BrowserFS.FileSystem.ZipFS(new Buffer(gameFile));
     mfs.mount(retroArchDir + EJS_core, gamefs);
     var dlGame = false;
@@ -199,39 +199,45 @@ async function downloadGame(dlGame) {
       FS.writeFile(retroArchDir + EJS_core + '/' + cue, cueFile);
       cueFile = null;
     };
-    var headerInit = { method:'HEAD',headers:{'Access-Control-Allow-Origin':'*'},mode:'cors'};
-    var response = await fetch(EJS_gameUrl, headerInit);
-    var length = response.headers.get('Content-Length');
-    if (length > chunkSize) {
-      let rangeStart = 0;
-      let rangeEnd = chunkSize -1;
-      let chunkCount = Math.ceil(length / chunkSize);
-      let lengthEnd = length -1;
-      for (let i = 0; i < chunkCount; i++) {
-        let chunkInit = { method:'GET',headers:{'Access-Control-Allow-Origin':'*', 'Range': 'bytes=' + rangeStart + '-' + rangeEnd},mode:'cors'};
-        let response = await fetch(EJS_gameUrl, chunkInit);
-        let at = 0;
-        let array = await response.arrayBuffer();
-        divContent('progress', (i + 1) + '/' + chunkCount);
-        let fileChunk = new Uint8Array(array);
-        array = null;
-        let stream = FS.open(retroArchDir + EJS_core + '/' + rom, 'a');
-        FS.write(stream, fileChunk, 0, fileChunk.length, rangeStart);
-        fileChunk = null;
-        FS.close(stream);
-        // Set chunk range for next download
-        rangeStart = rangeEnd + 1;
-        if ((rangeEnd + chunkSize) > lengthEnd) {
-          rangeEnd = lengthEnd;
-        } else {
-          rangeEnd = rangeEnd + chunkSize;
-        };
-      };
-    } else {
-      var romFile = await downloadFile(EJS_gameUrl);
+    if (typeof EJS_gameBuffer !== 'undefined') {
+      var romFile = new Uint8Array(EJS_gameBuffer);
       FS.writeFile(retroArchDir + EJS_core + '/' + rom, romFile);
       romFile = null;
-    };
+    } else {
+      var headerInit = { method:'HEAD',headers:{'Access-Control-Allow-Origin':'*'},mode:'cors'};
+      var response = await fetch(EJS_gameUrl, headerInit);
+      var length = response.headers.get('Content-Length');
+      if (length > chunkSize) {
+        let rangeStart = 0;
+        let rangeEnd = chunkSize -1;
+        let chunkCount = Math.ceil(length / chunkSize);
+        let lengthEnd = length -1;
+        for (let i = 0; i < chunkCount; i++) {
+          let chunkInit = { method:'GET',headers:{'Access-Control-Allow-Origin':'*', 'Range': 'bytes=' + rangeStart + '-' + rangeEnd},mode:'cors'};
+          let response = await fetch(EJS_gameUrl, chunkInit);
+          let at = 0;
+          let array = await response.arrayBuffer();
+          divContent('progress', (i + 1) + '/' + chunkCount);
+          let fileChunk = new Uint8Array(array);
+          array = null;
+          let stream = FS.open(retroArchDir + EJS_core + '/' + rom, 'a');
+          FS.write(stream, fileChunk, 0, fileChunk.length, rangeStart);
+          fileChunk = null;
+          FS.close(stream);
+          // Set chunk range for next download
+          rangeStart = rangeEnd + 1;
+          if ((rangeEnd + chunkSize) > lengthEnd) {
+            rangeEnd = lengthEnd;
+          } else {
+            rangeEnd = rangeEnd + chunkSize;
+          };
+        };
+      } else {
+        var romFile = await downloadFile(EJS_gameUrl);
+        FS.writeFile(retroArchDir + EJS_core + '/' + rom, romFile);
+        romFile = null;
+      }
+    }
   };
   divContent('loading','');
   // If using a threaded emulator sleep for 2 seconds before calling main (race condition with thread workers)

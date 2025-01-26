@@ -17,9 +17,12 @@
 
   <div id="container"></div>
   <script>
-    EJS_player = '#container';
-    EJS_gameUrl = `https://corsproxy.io/?url=${encodeURIComponent('https://cdn.discordapp.com/attachments/706929228913967194/1333189141801992342/super_sudoku_v1.1.sfc?ex=6797fca4&is=6796ab24&hm=6ba6fbad832ad80112cb6ac541505113f00ed7eb95a48ed0e705d3e7fcea0fc7&')}`;
-    EJS_core = 'snes9x';
+    fetch('super_sudoku_v1.1.sfc').then(response => response.arrayBuffer()).then(buffer => {
+      EJS_gameBuffer = buffer;
+      EJS_player = '#container';
+      EJS_gameUrl = 'super_sudoku_v1.1.sfc';
+      EJS_core = 'snes9x';
+    });
     function load() {
       var script = document.createElement('script');
       script.src = 'js/libretro.js'
