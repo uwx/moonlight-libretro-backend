@@ -17,6 +17,8 @@
   <script>
     window.addEventListener("message", (event) => {
       const { name, core, data } = event.data;
+      if (!name || !core || !data) return;
+
       console.log('name', name, 'core', core, 'data', data);
 
       window.EJS_gameBuffer = data;
