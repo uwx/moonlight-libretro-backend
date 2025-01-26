@@ -17,12 +17,25 @@
 
   <div id="container"></div>
   <script>
-    fetch('super_sudoku_v1.1.sfc').then(response => response.arrayBuffer()).then(buffer => {
-      EJS_gameBuffer = buffer;
-      EJS_player = '#container';
-      EJS_gameUrl = 'super_sudoku_v1.1.sfc';
-      EJS_core = 'snes9x';
-    });
+    // https://stackoverflow.com/a/21797381
+    function base64ToArrayBuffer(base64) {
+      var binaryString = atob(base64);
+      var bytes = new Uint8Array(binaryString.length);
+      for (var i = 0; i < binaryString.length; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+      }
+      return bytes.buffer;
+    }
+
+    const romMetadata = JSON.parse(decodeURIComponent(document.location.hash.slice(1, document.location.hash.lastIndexOf(';'))));
+    const romBase64 = decodeURIComponent(document.location.hash.slice(document.location.hash.lastIndexOf(';') + 1));
+    console.log(romMetadata, romBase64)
+    const romBuffer = base64ToArrayBuffer(romBase64);
+
+    EJS_gameBuffer = romBuffer;
+    EJS_player = '#container';
+    EJS_gameUrl = romMetadata.name;
+    EJS_core = romMetadata.core;
     function load() {
       var script = document.createElement('script');
       script.src = 'js/libretro.js'
