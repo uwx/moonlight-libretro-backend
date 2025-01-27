@@ -19,7 +19,7 @@
       const { name, core, data } = event.data;
       if (!name || !core || !data) return;
 
-      console.log('name', name, 'core', core, 'data', data);
+      console.log('name', name, 'core', core, 'data', data.length);
 
       window.EJS_gameBuffer = data;
       window.EJS_player = '#container';
