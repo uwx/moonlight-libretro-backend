@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <title>Moonlight LibretroJS Backend</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="Content-Security-Policy" content="style-src 'unsafe-inline'; script-src 'self' 'unsafe-eval'; script-src-elem 'self' 'unsafe-inline'; default-src 'none'">
+  <meta http-equiv="Content-Security-Policy" content="style-src 'unsafe-inline'; script-src 'self' 'unsafe-eval'; script-src-elem 'self' 'unsafe-inline'; connect-src 'self'; default-src 'none'">
   <style>
     body {
       margin: 0;
@@ -15,6 +15,14 @@
 <body>
   <div id="container"></div>
   <script>
+    const DEBUG = false;
+
+    if (DEBUG) {
+      const script = document.createElement('script');
+      script.src = 'debugmode.js';
+      document.getElementsByTagName('head')[0].appendChild(script);
+    }
+
     window.addEventListener("message", (event) => {
       const { name, core, data } = event.data;
       if (!name || !core || !data) return;
@@ -26,7 +34,7 @@
       window.EJS_gameUrl = name;
       window.EJS_core = core;
       
-      var script = document.createElement('script');
+      const script = document.createElement('script');
       script.src = 'js/libretro.js';
       document.getElementsByTagName('head')[0].appendChild(script);
     });
